@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
     # TODO #
     #! Expand Filesystem.
@@ -7,7 +7,6 @@
     #! Set Wifi.
     #! Localize keyboard & timezone.
     # sudo apt update.
-
 
 # Variables #
     # Log setup #
@@ -19,6 +18,7 @@
     DB=$(mysql --version|awk '{ print $5 }'|awk -F\, '{ print $1 }');
     GIT=$(git --version);
     COMPOSER=$(composer --version);
+    CPU_INFO="/proc/cpuinfo";
 
     # Messages #
     MSG_NP="This device is most likley not a Raspberry Pi"
@@ -29,7 +29,7 @@
     log() {
         # Make log file if it doesn't exist #
         if [ ! -f "$LOG_FILE" ]; then
-            touch $LOG_FILE;
+            sudo touch $LOG_FILE;
         fi
 
         # Is the message empty, just add empty line to log #
@@ -43,7 +43,7 @@
         fi
 
         # Print message to log file #
-        echo "$MSG" | tee -a $LOG_FILE;
+        echo "$MSG" | sudo tee -a $LOG_FILE;
     }
 
     # Install app, pass app as arg $ #
@@ -57,27 +57,31 @@
         log "INFO Installation of $1 Finished";
     }
 
-#    # Ask t ostart install #
-    read -p "This script will install a LAMP server, do you wish to continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1;
-    log "INFO ${confirm}";
+    # Ask to start install #
+    # read -p "This script will install a LAMP server, do you wish to continue? (Y/N): " confirm && [ $confirm == [yY] || $confirm == [yY][eE][sS] ] || exit 1;
+    # log "INFO ${confirm}";
 
-    # Raspberry Pi specific variables #
-    SERIAL=$(sed -n 's/^Serial\s*: 0*//p' /proc/cpuinfo);
-    MODEL=$(sed -n 's/^Model\s*: 0*//p' /proc/cpuinfo);
-    HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' /proc/cpuinfo);
-    REVISION=$(sed -n 's/^Revision\s*: 0*//p' /proc/cpuinfo);
-
-
-
-   # #
+    # #
     log "INFO Script Started";
 
-    log "INFO SERIAL Number: ${SERIAL}";
-    log "INFO MODEL Number: ${MODEL}";
-    log "INFO HARDWARE: ${HARDWARE}";
-    log "INFO REVISION: ${REVISION}";
+    # System Info #
+    if test -f "$CPU_INFO"; then
+        # Set Raspberry Pi specific variables #
+        SERIAL=$(sed -n 's/^Serial\s*: 0*//p' /proc/cpuinfo);
+        MODEL=$(sed -n 's/^Model\s*: 0*//p' /proc/cpuinfo);
+        HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' /proc/cpuinfo);
+        REVISION=$(sed -n 's/^Revision\s*: 0*//p' /proc/cpuinfo);
 
-# Apps/Software #
+        log "INFO SERIAL Number: ${SERIAL}";
+        log "INFO MODEL Number: ${MODEL}";
+        log "INFO HARDWARE: ${HARDWARE}";
+        log "INFO REVISION: ${REVISION}";
+    else 
+        log "ERROR ${MSG_NP}";
+        exit 0;
+    fi
+
+    # Apps/Software #
     # PHP #
     if [ -z "${PHP}" ]
     then
