@@ -185,18 +185,18 @@
         log "INFO Securing MySQL Install";
 
         log "INFO MySQL Changing root password";
-        sudo mysql -uroot "SET PASSWORD FOR root@localhost = PASSWORD('${ENV_MYSQL_ROOT_PASSWORD}');FLUSH PRIVILEGES;"
+        mysql -u root -e "SET PASSWORD FOR root@'localhost' = PASSWORD('${ENV_MYSQL_ROOT_PASSWORD}');FLUSH PRIVILEGES;"
 
-        log "INFO MySQL Deleting Test users";
-        sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DELETE FROM mysql.user WHERE User='';"
+        # log "INFO MySQL Deleting Test users";
+        # sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DELETE FROM mysql.user WHERE User='';"
 
         # sudo mysql -uroot -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
         
-        log "INFO MySQL Deleting Test Databases";
-        sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test_%';"
+        # log "INFO MySQL Deleting Test Databases";
+        # sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test_%';"
 
-        log "INFO MySQL Add User";
-        sudo mysql -u root -p${ENV_MYSQL_ROOT_PASSWORD} -e "CREATE USER '${ENV_MYSQL_USER_NAME}'@'localhost' IDENTIFIED BY '${ENV_MYSQL_USER_PW}';GRANT ALL PRIVILEGES ON *.* TO '${ENV_MYSQL_USER_NAME}'@'localhost';FLUSH PRIVILEGES;"
+        # log "INFO MySQL Add User";
+        # sudo mysql -u root -p${ENV_MYSQL_ROOT_PASSWORD} -e "CREATE USER '${ENV_MYSQL_USER_NAME}'@'localhost' IDENTIFIED BY '${ENV_MYSQL_USER_PW}';GRANT ALL PRIVILEGES ON *.* TO '${ENV_MYSQL_USER_NAME}'@'localhost';FLUSH PRIVILEGES;"
 
         log "INFO MYSQL Installation Complete";
 

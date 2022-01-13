@@ -16,6 +16,7 @@ Install Composer:
 https://lindevs.com/install-composer-on-raspberry-pi/
 
 TODO:
+    sudo apt update -y && sudo apt upgrade -y;
     Expand Filesystem.
     Enable SSH.
     Set Wifi.
