@@ -146,8 +146,19 @@
     if [ -z "${COMPOSER}" ]
     then
        log "ERROR COMPOSER is not installed";
+       sleep 2s;
+       log "INFO Installing Composer";
+
+       wget -O composer-setup.php https://getcomposer.org/installer
+
+       sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+       sleep 2s;
+       log "INFO Removeing Composer setup files";
+       rm -rf composer-setup.php
+
     else
-        log "INFO COMPOSER: ${COMPOSER}";
+        log "INFO COMPOSER: ${COMPOSER} Installed";
     fi
     
 

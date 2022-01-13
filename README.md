@@ -9,10 +9,13 @@ https://www.tal.org/tutorials/raspberrypi_php_apache
 Install MySQL:
 https://serverfault.com/questions/783527/non-interactive-silent-install-of-mysql-5-7-on-ubuntu-16-04-lts
 
+Install Composer:
+https://lindevs.com/install-composer-on-raspberry-pi/
+
 TODO:
     Expand Filesystem.
     Enable SSH.
     Set Wifi.
     install Git.
     Localize keyboard & timezone.
-    Ask what version of PHP?
+    Ask what version of PHP to install?
