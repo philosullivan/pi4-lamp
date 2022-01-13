@@ -3,6 +3,7 @@
     # TODO #
     #! Expand Filesystem.
     #! Enable SSH.
+    #! install Git.
     #! Set Wifi.
     #! Localize keyboard & timezone.
     # sudo apt update.
