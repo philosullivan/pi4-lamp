@@ -1,6 +1,11 @@
 #!/bin/bash
 
-    # #
+    # TODO #
+    #! Expand Filesystem.
+    #! Enable SSH.
+    #! Set Wifi.
+    #! Localize keyboard & timezone.
+    # sudo apt update.
 
 
 # Variables #
