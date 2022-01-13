@@ -19,3 +19,5 @@ TODO:
     install Git.
     Localize keyboard & timezone.
     Ask what version of PHP to install?
+    Ask what version of composer to install?
+    Ask for Mysql Root PW.
