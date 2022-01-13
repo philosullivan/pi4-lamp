@@ -1,26 +1,11 @@
 #!/usr/bin/bash
 
-    # TODO #
-    #! Expand Filesystem.
-    #! Enable SSH.
-    #! install Git.
-    #! Set Wifi.
-    #! Localize keyboard & timezone.
-    # sudo apt update.
-
 # Variables #
-    # Log setup #
+    export DEBIAN_FRONTEND=noninteractive;
+
     LOG_DATE=`date +%m_%d_%Y`;
     LOG_FILE="${LOG_DATE}.log";
-
-    # Apps/Software to look for #
-    PHP=$(php -r 'echo PHP_VERSION;');
-    DB=$(mysql --version|awk '{ print $5 }'|awk -F\, '{ print $1 }');
-    GIT=$(git --version);
-    COMPOSER=$(composer --version);
     CPU_INFO="/proc/cpuinfo";
-
-    # Messages #
     MSG_NP="This device is most likley not a Raspberry Pi"
 
 # Functions #
@@ -82,31 +67,82 @@
     fi
 
     # Apps/Software #
-    # PHP #
+
+    # PHP Repository #
+    PHP=$(php -r 'echo PHP_VERSION;');
     if [ -z "${PHP}" ]
     then
        log "ERROR PHP is not installed";
+       sleep 2s;
+       log "INFO Setting PHP Repository";
+
+       wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
+
+       echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php7.list
+
+       sudo apt update
+
     else
-        log "INFO PHP: ${PHP}";
+        log "INFO PHP Repository: ${PHP} Setup";
+    fi
+
+    # APACHE #
+    APACHE=$(apache2 -v);
+    if [ -z "${APACHE}" ]
+    then
+       log "ERROR APACHE is not installed";
+       sleep 2s;
+       log "INFO Installing APACHE";
+
+       sudo apt install -y apache2 libapache2-mod-fcgid;
+
+    else
+        log "INFO APACHE: ${APACHE} Installed";
+    fi
+
+    # PHP #
+    PHP=$(php -r 'echo PHP_VERSION;');
+    if [ -z "${PHP}" ]
+    then
+       log "ERROR PHP is not installed";
+       sleep 2s;
+       log "INFO Installing PHP";
+       sleep 2s;
+
+       sudo apt install -y php7.3-cli php7.3-fpm \
+       php7.3-opcache php7.3-curl php7.3-mbstring \
+       php7.3-pgsql php7.3-zip php7.3-xml php7.3-gd;
+
+       log "INFO Enabling PHP-FPM";
+       sleep 2s;
+    
+       sudo a2enmod proxy_fcgi;
+       sudo a2enconf php7.3-fpm;
+
+       log "INFO Reloading Apache2";
+       sudo systemctl reload apache2;
+
+    else
+        log "INFO PHP: ${PHP} Installed";
     fi
 
     # MYSQL #
+    DB=$(mysql --version|awk '{ print $5 }'|awk -F\, '{ print $1 }');
     if [ -z "${DB}" ]
     then
        log "ERROR MySQL is not installed";
+       sleep 2s;
+       log "INFO MySQL APT Repository";
+       sleep 2s;
+
+
+
     else
         log "INFO MySQL: ${DB}";
     fi
-
-    # GIT #
-    if [ -z "${GIT}" ]
-    then
-       log "ERROR GIT is not installed";
-    else
-        log "INFO GIT: ${GIT}";
-    fi
     
     # Composer #
+    COMPOSER=$(composer --version);
     if [ -z "${COMPOSER}" ]
     then
        log "ERROR COMPOSER is not installed";
