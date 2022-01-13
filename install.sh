@@ -5,7 +5,7 @@
     LOG_DATE=`date +%m_%d_%Y`;
     LOG_FILE="$HOME/logs/${LOG_DATE}.log";
     CPU_INFO="/proc/cpuinfo";
-    MSG_NP="This device is most likley not a Raspberry Pi"
+    MSG_NP="This device is most likley not a Raspberry Pi";
 
 # Functions #
 
@@ -44,22 +44,6 @@
     # Start Script #
     log "INFO Script Started";
 
-    # Load options from .env file #
-    if [ -f .env ]
-    then
-        log "INFO ENV_FILE: FOUND";
-        export $(cat .env | grep -v '#' | awk '/=/ {print $1}');
-
-        log "INFO ENV_PHP_VER: ${ENV_PHP_VER}";
-        log "INFO ENV_DB_PW: ${ENV_DB_PW}";
-        log "INFO ENV_HOSTNAME: ${ENV_HOSTNAME}";
-
-        # Eval ENV Variables. #
-        
-    else 
-        error_exit "ENV_FILE: NOT FOUND";
-    fi
-
     # Try and ping the  outside world #
     wget -q --spider http://google.com
 
@@ -67,7 +51,25 @@
     if [ $? -eq 0 ]; then
         log "INFO INTERNET ACCESS: SUCCESS";
     else
-        error_exit "NO INTERNET ACCESS, PLESE SETUP AN INTERNET CONNECTION";
+        error_exit "NO INTERNET ACCESS, PLEASE SETUP AN INTERNET CONNECTION";
+    fi
+
+    # Load options from .env file #
+    if [ -f .env ]
+    then
+        log "INFO ENV_FILE: FOUND";
+        export $(cat .env | grep -v '#' | awk '/=/ {print $1}');
+
+        log "INFO ENV_PHP_VER: ${ENV_PHP_VER}";
+        log "INFO ENV_MYSQL_ROOT_PASSWORD: ${ENV_MYSQL_ROOT_PASSWORD}";
+        log "INFO ENV_MYSQL_USER_NAME: ${ENV_MYSQL_USER_NAME}";
+        log "INFO ENV_MYSQL_USER_PW: ${ENV_MYSQL_USER_PW}";
+        log "INFO ENV_HOSTNAME: ${ENV_HOSTNAME}";
+
+        # Eval ENV Variables. #
+        
+    else 
+        error_exit "ENV_FILE: NOT FOUND";
     fi
 
     # System Info #
@@ -88,13 +90,25 @@
         error_exit "${MSG_NP}";
     fi
 
-    # Apps/Software #
+    # Install Apps/Software #
+
+    # EXPECT #
+    EXPECT=$(expect -v);
+    if [ -z "${EXPECT}" ]
+    then
+       log "ERROR EXPECT is not installed";
+       log "INFO Setting EXPECT";
+       sudo apt update;
+       sudo apt install -y expect;
+    else
+        log "INFO EXPECT: Installed";
+    fi
+
     # PHP Repository #
     PHP=$(php -r 'echo PHP_VERSION;');
     if [ -z "${PHP}" ]
     then
        log "ERROR PHP is not installed";
-       sleep 2s;
        log "INFO Setting PHP Repository";
 
        wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
@@ -102,7 +116,6 @@
        echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php7.list
 
        sudo apt update
-
     else
         log "INFO PHP Repository: ${PHP} Setup";
     fi
@@ -124,6 +137,8 @@
     then
        log "ERROR PHP is not installed";
        log "INFO Installing PHP";
+       
+       sudo apt update;
 
        sudo apt install -y php7.3-cli php7.3-fpm \
        php7.3-opcache php7.3-curl php7.3-mbstring \
@@ -141,36 +156,59 @@
         log "INFO PHP: ${PHP} Installed";
     fi
 
-    # MYSQL #
-    DB=$(mysql --version|awk '{ print $5 }'|awk -F\, '{ print $1 }');
-    if [ -z "${DB}" ]
-    then
-       log "ERROR MySQL is not installed";
-       log "INFO Installing MySQL";
-
-    else
-        log "INFO MySQL: ${DB}";
-    fi
-    
     # Composer #
     COMPOSER=$(composer --version);
     if [ -z "${COMPOSER}" ]
     then
        log "ERROR COMPOSER is not installed";
-       sleep 2s;
        log "INFO Installing Composer";
 
        wget -O composer-setup.php https://getcomposer.org/installer
 
        sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-       sleep 2s;
        log "INFO Removeing Composer setup files";
        rm -rf composer-setup.php
-
     else
         log "INFO COMPOSER: ${COMPOSER} Installed";
     fi
+
+    # MYSQL #
+    DB=$(mysql --version|awk '{ print $5 }'|awk -F\, '{ print $1 }');
+    if [ -z "${DB}" ]
+    then
+       log "ERROR MySQL is not installed";
+       log "INFO Installing MySQL";
+       sudo apt update;
+       sudo apt install -y mariadb-server;
+
+        log "INFO Securing MySQL Install";
+
+        log "INFO MySQL Changing root password";
+        sudo mysql -uroot "SET PASSWORD FOR root@localhost = PASSWORD('${ENV_MYSQL_ROOT_PASSWORD}');FLUSH PRIVILEGES;"
+
+        log "INFO MySQL Deleting Test users";
+        sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DELETE FROM mysql.user WHERE User='';"
+
+        # sudo mysql -uroot -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+        
+        log "INFO MySQL Deleting Test Databases";
+        sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test_%';"
+
+        log "INFO MySQL Add User";
+        sudo mysql -u root -p${ENV_MYSQL_ROOT_PASSWORD} -e "CREATE USER '${ENV_MYSQL_USER_NAME}'@'localhost' IDENTIFIED BY '${ENV_MYSQL_USER_PW}';GRANT ALL PRIVILEGES ON *.* TO '${ENV_MYSQL_USER_NAME}'@'localhost';FLUSH PRIVILEGES;"
+
+        log "INFO MYSQL Installation Complete";
+
+    else
+        log "INFO MySQL: ${DB}";
+    fi
+    
+    # Check all is good #
+    log "INFO Running System Check";
+
+    # Cleanup #
+    log "INFO Running Cleanup";
     
     # End Script #
     log "INFO Script Complete";
