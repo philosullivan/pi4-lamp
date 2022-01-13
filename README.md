@@ -1,7 +1,7 @@
 # pi4-lamp
 LAMP setup script for raspberry pi 4
 
-NOT Complete, only use script from main/master!
+NOT Complete.
 
 Install LAMP:
 https://www.tal.org/tutorials/raspberrypi_php_apache
@@ -21,3 +21,6 @@ TODO:
     Ask what version of PHP to install?
     Ask what version of composer to install?
     Ask for Mysql Root PW.
+    Use .env file to personalize?
+    Run clean up and delete this script/directory.
+    save log to home directory?
