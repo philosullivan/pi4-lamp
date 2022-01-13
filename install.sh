@@ -185,8 +185,8 @@
         log "INFO Securing MySQL Install";
 
         log "INFO MySQL Changing root password";
-        mysql -u root -e "SET PASSWORD FOR root@'localhost' = PASSWORD('${ENV_MYSQL_ROOT_PASSWORD}');FLUSH PRIVILEGES;"
-
+        sudo mysql -u root "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${ENV_MYSQL_ROOT_PASSWORD}');FLUSH PRIVILEGES;";
+        
         # log "INFO MySQL Deleting Test users";
         # sudo mysql -uroot -p${ENV_MYSQL_ROOT_PASSWORD} "DELETE FROM mysql.user WHERE User='';"
 
