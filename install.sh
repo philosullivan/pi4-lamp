@@ -107,6 +107,7 @@
 		log "INFO CHANGE HOST NAME: YES";
 		CHANGE_HOSTNAME="y";
 	fi
+	
 	# Get CHANGE_HOSTNAME and set it to lowercase #
 	# log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
 	if [[ $CHANGE_HOSTNAME == "y" ]]
@@ -138,7 +139,6 @@
 	then
 		passwd
 	fi
-
 
 	# System Info #
 	if test -f "$CPU_INFO"; then
