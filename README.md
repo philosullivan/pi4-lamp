@@ -3,8 +3,15 @@ LAMP setup script for raspberry pi 4
 
 NOT Complete.
 
-#### H4
+###
 Setup
+1.
+2.
+3.
+4.
+5.
+6.
+
 
 Get Pi OS Image:
 https://www.raspberrypi.com/software/operating-systems/
@@ -13,16 +20,12 @@ I use Raspberry Pi OS Lite
 
 
 bash ./install.sh
+Expand Filesystem
 
-TODO:
-    sudo apt update -y && sudo apt upgrade -y;
-    Expand Filesystem.
-    Enable SSH.
-    Set Wifi.
-    install Git.
-    Localize keyboard & timezone.
-    Add Coloring to console.
-    Ask for Mysql Root PW.
-    Run clean up and delete this script/directory.
-    test localhost?
-    Restart after setup.
+
+1. sudo apt update
+2. sudo apt upgrade
+3. Setup network connection
+4. Install Git - sudo apt install git
+5. Enable ssh - optional
+6. Localize keyboard & timezone -optional
