@@ -108,6 +108,7 @@
 		read -p "Enter New Hostname: " NEW_HOSTNAME
 		log "INFO New hostname: ${NEW_HOSTNAME}";
 		# raspberrypi
+		# NEW_HOSTNAME=raspberrypi-$(cat /proc/cpuinfo | grep -E "^Serial" | sed "s/.*: 0*//");
 		echo $NEW_HOSTNAME | sudo tee /etc/hostname > /dev/null
 		sudo sed -i "s/127.0.1.1.*$HOSTNAME\$/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
 	fi
