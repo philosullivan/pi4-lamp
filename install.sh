@@ -1,11 +1,6 @@
 #!/bin/bash
 	#export DEBIAN_FRONTEND=noninteractive;
 
-	if [ ! -e /home/pi ]; then
-    	echo "Only run this on your pi.";
-    	exit 1;
-	fi
-
 # Variables #
 	#HOSTNAME=$(hostname);
 	HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r");
@@ -15,6 +10,11 @@
 	CPU_INFO="/proc/cpuinfo";
 	MSG_NP="This device is most likley not a Raspberry Pi";
 
+	# Make sure running on a pi #
+	if [ ! -e /home/pi ]; then
+    	error_exit "${MSG_NP}";
+	fi
+
 	# Supported PHP Versions will need regular updating#
 	# https://www.php.net/supported-versions.php
 	PHP_VERSIONS=(
@@ -23,8 +23,8 @@
 		"8.1"
 		"Quit"
 	);
-# Functions #
 
+# Functions #
 	# Generic logging function #
 	log() {
 		# Make log file if it doesn't exist #
