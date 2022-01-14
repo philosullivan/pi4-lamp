@@ -5,6 +5,7 @@
 	#HOSTNAME=$(hostname);
 	HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r");
 	CHANGE_HOSTNAME="n";
+	CHANGE_ROOT_PASSWORD="n";
 	LOG_DATE=`date +%m_%d_%Y`;
 	LOG_FILE="$HOME/logs/${LOG_DATE}.log";
 	CPU_INFO="/proc/cpuinfo";
@@ -114,6 +115,7 @@
 	fi
 
 	# Root password #
+	# https://tutorials-raspberrypi.com/raspberry-pi-default-login-password/
 	read -p "Do you wish to change your root password ? " -n 1 -r
 	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -121,8 +123,15 @@
 		log "INFO CHANGE ROOT_PASSWORD: NO";
 	else
 		log "INFO CHANGE ROOT_PASSWORD: YES";
+		CHANGE_ROOT_PASSWORD="y";
 	fi
-	log "INFO CHANGE ROOT_PASSWORD: ${ROOT_PASSWORD}"
+	
+	# Get CHANGE_ROOT_PASSWORD and set it to lowercase #
+	log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD,,}";
+	if [[ $CHANGE_ROOT_PASSWORD == "y" ]]
+	then
+		passwd
+	fi
 
 
 	# System Info #
@@ -139,6 +148,7 @@
 		log "INFO ORIGINAL_HOSTNAME: ${HOSTNAME}";
 		log "INFO NEW_HOSTNAME: ${NEW_HOSTNAME}";
 		log "INFO PHP_VERSION: ${PHP_VERSION}";
+		log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD}";
 	else
 		error_exit "${MSG_NP}";
 	fi
