@@ -3,29 +3,29 @@ LAMP setup script for raspberry pi 4
 
 NOT Complete.
 
-Install LAMP:
-https://www.tal.org/tutorials/raspberrypi_php_apache
+###
+Setup
+1.
+2.
+3.
+4.
+5.
+6.
 
-Install MySQL:
-sudo apt install -y mariadb-server
-sudo mysql -u root "SET PASSWORD FOR 'root'@localhost = PASSWORD('1qaz2wsx');FLUSH PRIVILEGES;";
 
-https://serverfault.com/questions/783527/non-interactive-silent-install-of-mysql-5-7-on-ubuntu-16-04-lts
+Get Pi OS Image:
+https://www.raspberrypi.com/software/operating-systems/
 
-Install Composer:
-https://lindevs.com/install-composer-on-raspberry-pi/
+I use Raspberry Pi OS Lite
+
 
 bash ./install.sh
+Expand Filesystem
 
-TODO:
-    sudo apt update -y && sudo apt upgrade -y;
-    Expand Filesystem.
-    Enable SSH.
-    Set Wifi.
-    install Git.
-    Localize keyboard & timezone.
-    Add Coloring to console.
-    Ask for Mysql Root PW.
-    Run clean up and delete this script/directory.
-    test localhost?
-    Restart after setup.
+
+1. sudo apt update
+2. sudo apt upgrade
+3. Setup network connection
+4. Install Git - sudo apt install git
+5. Enable ssh - optional
+6. Localize keyboard & timezone -optional

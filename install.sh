@@ -2,14 +2,27 @@
 	#export DEBIAN_FRONTEND=noninteractive;
 
 # Variables #
-	HOSTNAME=$(hostname);
+	#HOSTNAME=$(hostname);
+	HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r");
 	CHANGE_HOSTNAME="n";
+	CHANGE_ROOT_PASSWORD="n";
 	LOG_DATE=`date +%m_%d_%Y`;
 	LOG_FILE="$HOME/logs/${LOG_DATE}.log";
 	CPU_INFO="/proc/cpuinfo";
 	MSG_NP="This device is most likley not a Raspberry Pi";
 
-	# Supported PHP Versions #
+	# Make sure running on a pi #
+	if [ ! -e /home/pi ]; then
+    	error_exit "${MSG_NP}";
+	else 
+		# Set Raspberry Pi specific variables #
+		SERIAL=$(sed -n 's/^Serial\s*: 0*//p' ${CPU_INFO});
+		MODEL=$(sed -n 's/^Model\s*: 0*//p' ${CPU_INFO});
+		HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' ${CPU_INFO});
+		REVISION=$(sed -n 's/^Revision\s*: 0*//p' ${CPU_INFO});
+	fi
+
+	# Supported PHP Versions will need regular updating#
 	# https://www.php.net/supported-versions.php
 	PHP_VERSIONS=(
 		"7.4"
@@ -17,8 +30,8 @@
 		"8.1"
 		"Quit"
 	);
-# Functions #
 
+# Functions #
 	# Generic logging function #
 	log() {
 		# Make log file if it doesn't exist #
@@ -64,7 +77,7 @@
 		error_exit "NO INTERNET ACCESS, PLEASE SETUP AN INTERNET CONNECTION";
 	fi
 
-		# Check all is good #
+	# #
 	log "INFO Gathering System config";
 
 	# Select PHP Version to Install. #
@@ -84,8 +97,9 @@
 	done
 
 	# Hostname #
-	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}' ? " -n 1 -r
-	echo    # (optional) move to a new line
+	# https://github.com/westonruter/raspberry-pi-stuff/blob/master/raspi-hostname.sh
+	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}'? (y/n)" -n 1 -r
+	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]]
 	then
 		log "INFO CHANGE HOST NAME: NO";
@@ -93,30 +107,62 @@
 		log "INFO CHANGE HOST NAME: YES";
 		CHANGE_HOSTNAME="y";
 	fi
-
-	log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
+	# Get CHANGE_HOSTNAME and set it to lowercase #
+	# log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
 	if [[ $CHANGE_HOSTNAME == "y" ]]
 	then
 		log "INFO Ask for new host name:";
-		read -p "Enter New Hostname: " HOSTNAME
-		log "INFO New hostname: ${HOSTNAME}";
+		read -p "Enter New Hostname: " NEW_HOSTNAME
+		log "INFO NEW HOSTNAME: ${NEW_HOSTNAME}";
+		# raspberrypi
+		# NEW_HOSTNAME=raspberrypi-$(cat /proc/cpuinfo | grep -E "^Serial" | sed "s/.*: 0*//");
+		echo $NEW_HOSTNAME | sudo tee /etc/hostname > /dev/null
+		sudo sed -i "s/127.0.1.1.*$HOSTNAME\$/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
 	fi
+
+	# Root password #
+	# https://tutorials-raspberrypi.com/raspberry-pi-default-login-password/
+	read -p "Do you wish to change your root password ? (y/n)" -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Yy]$ ]]
+	then
+		log "INFO CHANGE ROOT_PASSWORD: NO";
+	else
+		log "INFO CHANGE ROOT_PASSWORD: YES";
+		CHANGE_ROOT_PASSWORD="y";
+	fi
+	
+	# Get CHANGE_ROOT_PASSWORD and set it to lowercase #
+	#log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD,,}";
+	if [[ $CHANGE_ROOT_PASSWORD == "y" ]]
+	then
+		passwd
+	fi
+
 
 	# System Info #
 	if test -f "$CPU_INFO"; then
-		# Set Raspberry Pi specific variables #
-		SERIAL=$(sed -n 's/^Serial\s*: 0*//p' /proc/cpuinfo);
-		MODEL=$(sed -n 's/^Model\s*: 0*//p' /proc/cpuinfo);
-		HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' /proc/cpuinfo);
-		REVISION=$(sed -n 's/^Revision\s*: 0*//p' /proc/cpuinfo);
-
-
 		log "INFO SERIAL Number: ${SERIAL}";
 		log "INFO MODEL Number: ${MODEL}";
 		log "INFO HARDWARE: ${HARDWARE}";
 		log "INFO REVISION: ${REVISION}";
-		log "INFO HOSTNAME: ${HOSTNAME}";
+		
+		if [[ $CHANGE_HOSTNAME == "y" ]]
+		then
+			log "INFO CHANGE_HOSTNAME: ${$CHANGE_HOSTNAME}";
+			log "INFO ORIGINAL_HOSTNAME: ${HOSTNAME}";
+			log "INFO NEW_HOSTNAME: ${NEW_HOSTNAME}";
+		else
+			log "INFO HOSTNAME: ${HOSTNAME}";
+		fi
+
 		log "INFO PHP_VERSION: ${PHP_VERSION}";
+
+		if [[ $CHANGE_ROOT_PASSWORD == "y" ]]
+		then
+			log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD}";
+		fi
+
 	else
 		error_exit "${MSG_NP}";
 	fi
@@ -206,7 +252,7 @@
 
 		sleep 2s;
 
-		mysql_secure_installation
+		sudo mysql_secure_installation
 
 		log "INFO MYSQL Installation Complete";
 
