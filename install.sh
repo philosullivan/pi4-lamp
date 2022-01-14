@@ -3,6 +3,7 @@
 
 # Variables #
 	HOSTNAME=$(hostname);
+	CHANGE_HOSTNAME="n";
 	LOG_DATE=`date +%m_%d_%Y`;
 	LOG_FILE="$HOME/logs/${LOG_DATE}.log";
 	CPU_INFO="/proc/cpuinfo";
@@ -82,6 +83,25 @@
 		break
 	done
 
+	# Hostname #
+	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}' ? " -n 1 -r
+	echo    # (optional) move to a new line
+	if [[ ! $REPLY =~ ^[Yy]$ ]]
+	then
+		log "INFO CHANGE HOST NAME: NO";
+	else
+		log "INFO CHANGE HOST NAME: YES";
+		CHANGE_HOSTNAME="y";
+	fi
+
+	log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
+	if [[ $CHANGE_HOSTNAME == "y" ]]
+	then
+		log "INFO Ask for new host name:";
+		read -p "Enter New Hostname: " HOSTNAME
+		log "INFO New hostname: ${HOSTNAME}";
+	fi
+
 	# System Info #
 	if test -f "$CPU_INFO"; then
 		# Set Raspberry Pi specific variables #
@@ -112,7 +132,7 @@
 
 	   wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
 
-	   echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php7.list
+	   echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php${PHP_VERSION}.list
 
 	   sudo apt update
 	else
@@ -139,14 +159,14 @@
 
 	   sudo apt update;
 
-	   sudo apt install -y php7.3-cli php7.3-fpm \
-	   php7.3-opcache php7.3-curl php7.3-mbstring \
-	   php7.3-pgsql php7.3-zip php7.3-xml php7.3-gd;
+	   sudo apt install -y php${PHP_VERSION}-cli php${PHP_VERSION}-fpm \
+	   php${PHP_VERSION}-opcache php${PHP_VERSION}-curl php${PHP_VERSION}-mbstring \
+	   php${PHP_VERSION}-pgsql php${PHP_VERSION}-zip php${PHP_VERSION}-xml php${PHP_VERSION}-gd;
 
 	   log "INFO Enabling PHP-FPM";
 
 	   sudo a2enmod proxy_fcgi;
-	   sudo a2enconf php7.3-fpm;
+	   sudo a2enconf php${PHP_VERSION}-fpm;
 
 	   log "INFO Reloading Apache2";
 	   sudo systemctl reload apache2;
