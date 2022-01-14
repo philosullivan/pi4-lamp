@@ -206,7 +206,7 @@
 
 		sleep 2s;
 
-		mysql_secure_installation
+		sudo mysql_secure_installation
 
 		log "INFO MYSQL Installation Complete";
 
