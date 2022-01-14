@@ -1,8 +1,14 @@
 #!/bin/bash
 	#export DEBIAN_FRONTEND=noninteractive;
 
+	if [ ! -e /home/pi ]; then
+    	echo "Only run this on your pi.";
+    	exit 1;
+	fi
+
 # Variables #
-	HOSTNAME=$(hostname);
+	#HOSTNAME=$(hostname);
+	HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r");
 	CHANGE_HOSTNAME="n";
 	LOG_DATE=`date +%m_%d_%Y`;
 	LOG_FILE="$HOME/logs/${LOG_DATE}.log";
@@ -84,6 +90,7 @@
 	done
 
 	# Hostname #
+	# https://github.com/westonruter/raspberry-pi-stuff/blob/master/raspi-hostname.sh
 	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}' ? " -n 1 -r
 	echo    # (optional) move to a new line
 	if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -98,10 +105,11 @@
 	if [[ $CHANGE_HOSTNAME == "y" ]]
 	then
 		log "INFO Ask for new host name:";
-		read -p "Enter New Hostname: " HOSTNAME
-		log "INFO New hostname: ${HOSTNAME}";
-		# echo "${HOSTNAME}" | sudo tee -a /etc/hostname
-		# echo "test" | sudo tee -a /etc/hostname
+		read -p "Enter New Hostname: " NEW_HOSTNAME
+		log "INFO New hostname: ${NEW_HOSTNAME}";
+		# raspberrypi
+		echo $NEW_HOSTNAME | sudo tee /etc/hostname > /dev/null
+		sudo sed -i "s/127.0.1.1.*$HOSTNAME\$/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
 	fi
 
 	# System Info #
@@ -117,7 +125,10 @@
 		log "INFO MODEL Number: ${MODEL}";
 		log "INFO HARDWARE: ${HARDWARE}";
 		log "INFO REVISION: ${REVISION}";
-		log "INFO HOSTNAME: ${HOSTNAME}";
+
+		log "INFO ORIGINAL_HOSTNAME: ${HOSTNAME}";
+		log "INFO NEW_HOSTNAME: ${NEW_HOSTNAME}";
+
 		log "INFO PHP_VERSION: ${PHP_VERSION}";
 	else
 		error_exit "${MSG_NP}";
