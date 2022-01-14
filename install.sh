@@ -6,6 +6,7 @@
 	HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r");
 	CHANGE_HOSTNAME="n";
 	CHANGE_ROOT_PASSWORD="n";
+	WEB_DIRECTORY='/var/www/html';
 	LOG_DATE=`date +%m_%d_%Y`;
 	LOG_FILE="$HOME/logs/${LOG_DATE}.log";
 	CPU_INFO="/proc/cpuinfo";
@@ -107,6 +108,7 @@
 		log "INFO CHANGE HOST NAME: YES";
 		CHANGE_HOSTNAME="y";
 	fi
+
 	# Get CHANGE_HOSTNAME and set it to lowercase #
 	# log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
 	if [[ $CHANGE_HOSTNAME == "y" ]]
@@ -138,7 +140,6 @@
 	then
 		passwd
 	fi
-
 
 	# System Info #
 	if test -f "$CPU_INFO"; then
@@ -259,6 +260,28 @@
 	else
 		log "INFO MySQL: ${DB}";
 	fi
+
+	# Set permissions #
+	# https://www.internalpointers.com/post/right-folder-permission-website
+	log "INFO Setting Permissions";
+
+	log "INFO Setting user pi as owner";
+	sudo chown -R pi ${WEB_DIRECTORY};
+
+	log "INFO Setting webserver as group owner";
+	sudo chgrp -R www-data ${WEB_DIRECTORY};
+
+	log "INFO Allowing owner to read, write and execute scripts";
+	sudo chmod -R 750 ${WEB_DIRECTORY};
+
+	log "INFO New files/folders inherit parent permissions";
+	sudo chmod g+s ${WEB_DIRECTORY};
+
+	log "INFO Creating phpinfo script";
+	echo "<?php phpinfo(); phpinfo(INFO_MODULES);?>" > "${WEB_DIRECTORY}/index.php";
+
+	log "INFO Removing default index.html file";
+	rm "${WEB_DIRECTORY}/index.html";
 
 	# Check all is good #
 	log "INFO Running System Check";
