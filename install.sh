@@ -214,15 +214,6 @@
 		log "INFO MySQL: ${DB}";
 	fi
 
-
-
-
-
-
-
-
-
-
 	# Check all is good #
 	log "INFO Running System Check";
 
@@ -231,5 +222,8 @@
 
 	# End Script #
 	log "INFO Script Complete";
+
+	# Reboot #
+	
 
 exit 0;
