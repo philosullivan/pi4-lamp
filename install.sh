@@ -92,7 +92,7 @@
 	# Hostname #
 	# https://github.com/westonruter/raspberry-pi-stuff/blob/master/raspi-hostname.sh
 	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}' ? " -n 1 -r
-	echo    # (optional) move to a new line
+	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]]
 	then
 		log "INFO CHANGE HOST NAME: NO";
@@ -100,7 +100,7 @@
 		log "INFO CHANGE HOST NAME: YES";
 		CHANGE_HOSTNAME="y";
 	fi
-
+	# Get CHANGE_HOSTNAME and set it to lowercase #
 	log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
 	if [[ $CHANGE_HOSTNAME == "y" ]]
 	then
@@ -113,6 +113,18 @@
 		sudo sed -i "s/127.0.1.1.*$HOSTNAME\$/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
 	fi
 
+	# Root password #
+	read -p "Do you wish to change your root password ? " -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Yy]$ ]]
+	then
+		log "INFO CHANGE ROOT_PASSWORD: NO";
+	else
+		log "INFO CHANGE ROOT_PASSWORD: YES";
+	fi
+	log "INFO CHANGE ROOT_PASSWORD: ${ROOT_PASSWORD}"
+
+
 	# System Info #
 	if test -f "$CPU_INFO"; then
 		# Set Raspberry Pi specific variables #
@@ -120,16 +132,12 @@
 		MODEL=$(sed -n 's/^Model\s*: 0*//p' /proc/cpuinfo);
 		HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' /proc/cpuinfo);
 		REVISION=$(sed -n 's/^Revision\s*: 0*//p' /proc/cpuinfo);
-
-
 		log "INFO SERIAL Number: ${SERIAL}";
 		log "INFO MODEL Number: ${MODEL}";
 		log "INFO HARDWARE: ${HARDWARE}";
 		log "INFO REVISION: ${REVISION}";
-
 		log "INFO ORIGINAL_HOSTNAME: ${HOSTNAME}";
 		log "INFO NEW_HOSTNAME: ${NEW_HOSTNAME}";
-
 		log "INFO PHP_VERSION: ${PHP_VERSION}";
 	else
 		error_exit "${MSG_NP}";
