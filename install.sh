@@ -9,7 +9,7 @@
 	CPU_INFO="/proc/cpuinfo";
 	MSG_NP="This device is most likley not a Raspberry Pi";
 
-	# Supported PHP Versions #
+	# Supported PHP Versions will need regular updating#
 	# https://www.php.net/supported-versions.php
 	PHP_VERSIONS=(
 		"7.4"
@@ -64,7 +64,7 @@
 		error_exit "NO INTERNET ACCESS, PLEASE SETUP AN INTERNET CONNECTION";
 	fi
 
-		# Check all is good #
+	# #
 	log "INFO Gathering System config";
 
 	# Select PHP Version to Install. #
@@ -100,6 +100,8 @@
 		log "INFO Ask for new host name:";
 		read -p "Enter New Hostname: " HOSTNAME
 		log "INFO New hostname: ${HOSTNAME}";
+		# echo "${HOSTNAME}" | sudo tee -a /etc/hostname
+		# echo "test" | sudo tee -a /etc/hostname
 	fi
 
 	# System Info #
