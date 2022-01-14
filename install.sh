@@ -278,7 +278,10 @@
 	sudo chmod g+s ${WEB_DIRECTORY};
 
 	log "INFO Creating phpinfo script";
-	echo "<?php phpinfo(); phpinfo(INFO_MODULES);?>" > file.txt
+	echo "<?php phpinfo(); phpinfo(INFO_MODULES);?>" > "${WEB_DIRECTORY}/index.php";
+
+	log "INFO Removing default index.html file";
+	rm "${WEB_DIRECTORY}/index.html";
 
 	# Check all is good #
 	log "INFO Running System Check";
