@@ -277,11 +277,8 @@
 	log "INFO New files/folders inherit parent permissions";
 	sudo chmod g+s ${WEB_DIRECTORY};
 
-	#
-	#<?php 
- 	#phpinfo(); 
- 	#phpinfo(INFO_MODULES);
-	#?>
+	log "INFO Creating phpinfo script";
+	echo "<?php phpinfo(); phpinfo(INFO_MODULES);?>" > file.txt
 
 	# Check all is good #
 	log "INFO Running System Check";
