@@ -6,7 +6,10 @@ NOT Complete.
 #### H4
 Setup
 
+Get Pi OS Image:
+https://www.raspberrypi.com/software/operating-systems/
 
+I use Raspberry Pi OS Lite
 
 
 bash ./install.sh
