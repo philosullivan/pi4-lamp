@@ -92,7 +92,7 @@
 
 	# Hostname #
 	# https://github.com/westonruter/raspberry-pi-stuff/blob/master/raspi-hostname.sh
-	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}' ? " -n 1 -r
+	read -p "Do you wish to change your hostname, this currently is '${HOSTNAME}'? (y/n)" -n 1 -r
 	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]]
 	then
@@ -102,7 +102,7 @@
 		CHANGE_HOSTNAME="y";
 	fi
 	# Get CHANGE_HOSTNAME and set it to lowercase #
-	log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
+	# log "INFO CHANGE_HOSTNAME: ${CHANGE_HOSTNAME,,}";
 	if [[ $CHANGE_HOSTNAME == "y" ]]
 	then
 		log "INFO Ask for new host name:";
@@ -116,7 +116,7 @@
 
 	# Root password #
 	# https://tutorials-raspberrypi.com/raspberry-pi-default-login-password/
-	read -p "Do you wish to change your root password ? " -n 1 -r
+	read -p "Do you wish to change your root password ? (y/n)" -n 1 -r
 	echo
 	if [[ ! $REPLY =~ ^[Yy]$ ]]
 	then
@@ -127,7 +127,7 @@
 	fi
 	
 	# Get CHANGE_ROOT_PASSWORD and set it to lowercase #
-	log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD,,}";
+	#log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD,,}";
 	if [[ $CHANGE_ROOT_PASSWORD == "y" ]]
 	then
 		passwd
