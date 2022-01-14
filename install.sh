@@ -14,6 +14,12 @@
 	# Make sure running on a pi #
 	if [ ! -e /home/pi ]; then
     	error_exit "${MSG_NP}";
+	else 
+		# Set Raspberry Pi specific variables #
+		SERIAL=$(sed -n 's/^Serial\s*: 0*//p' ${CPU_INFO});
+		MODEL=$(sed -n 's/^Model\s*: 0*//p' ${CPU_INFO});
+		HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' ${CPU_INFO});
+		REVISION=$(sed -n 's/^Revision\s*: 0*//p' ${CPU_INFO});
 	fi
 
 	# Supported PHP Versions will need regular updating#
@@ -136,19 +142,27 @@
 
 	# System Info #
 	if test -f "$CPU_INFO"; then
-		# Set Raspberry Pi specific variables #
-		SERIAL=$(sed -n 's/^Serial\s*: 0*//p' /proc/cpuinfo);
-		MODEL=$(sed -n 's/^Model\s*: 0*//p' /proc/cpuinfo);
-		HARDWARE=$(sed -n 's/^Hardware\s*: 0*//p' /proc/cpuinfo);
-		REVISION=$(sed -n 's/^Revision\s*: 0*//p' /proc/cpuinfo);
 		log "INFO SERIAL Number: ${SERIAL}";
 		log "INFO MODEL Number: ${MODEL}";
 		log "INFO HARDWARE: ${HARDWARE}";
 		log "INFO REVISION: ${REVISION}";
-		log "INFO ORIGINAL_HOSTNAME: ${HOSTNAME}";
-		log "INFO NEW_HOSTNAME: ${NEW_HOSTNAME}";
+		
+		if [[ $CHANGE_HOSTNAME == "y" ]]
+		then
+			log "INFO CHANGE_HOSTNAME: ${$CHANGE_HOSTNAME}";
+			log "INFO ORIGINAL_HOSTNAME: ${HOSTNAME}";
+			log "INFO NEW_HOSTNAME: ${NEW_HOSTNAME}";
+		else
+			log "INFO HOSTNAME: ${HOSTNAME}";
+		fi
+
 		log "INFO PHP_VERSION: ${PHP_VERSION}";
-		log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD}";
+
+		if [[ $CHANGE_ROOT_PASSWORD == "y" ]]
+		then
+			log "INFO CHANGE_ROOT_PASSWORD: ${CHANGE_ROOT_PASSWORD}";
+		fi
+
 	else
 		error_exit "${MSG_NP}";
 	fi
