@@ -2,7 +2,7 @@
 	#export DEBIAN_FRONTEND=noninteractive;
 
 # Variables #
-	#HOSTNAME=$(hostname);
+	SCRIPT_VERSION="0.0.1";
 	HOSTNAME=$(cat /etc/hostname | tr -d " \t\n\r");
 	CHANGE_HOSTNAME="n";
 	CHANGE_ROOT_PASSWORD="n";
@@ -67,6 +67,7 @@
 
 	# Start Script #
 	log "INFO Script Started";
+	log "INFO Script Version: ${SCRIPT_VERSION}";
 
 	# Try and ping the  outside world #
 	wget -q --spider http://google.com
